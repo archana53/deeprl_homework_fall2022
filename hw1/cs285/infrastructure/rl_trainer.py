@@ -201,7 +201,7 @@ class RL_Trainer(object):
             # TODO use the sampled data to train an agent
             # HINT: use the agent's train function
             # HINT: keep the agent's training log for debugging
-            train_log = self.agent.train()
+            train_log = self.agent.train(ob_batch,ac_batch,re_batch,next_ob_batch,terminal_batch)
             all_logs.append(train_log)
         return all_logs
 
