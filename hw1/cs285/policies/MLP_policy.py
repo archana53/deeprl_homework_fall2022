@@ -121,7 +121,7 @@ class MLPPolicySL(MLPPolicy):
         observations = ptu.from_numpy(observations.astype(np.float32))
         actions = ptu.from_numpy(actions.astype(np.float32))
         selected_actions = self.get_action(observations)
-        print(selected_actions)
+        print(selected_actions.shape,actions.shape)
         loss = self.loss(selected_actions,actions)
         self.optimizer.zero_grad()
         loss.backward()
