@@ -76,16 +76,18 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 
     def get_action(self, obs: np.ndarray) -> np.ndarray:
         if len(obs.shape) > 1:
-            observation = obs
+            observation = obs 
         else:
             observation = obs[None]
 
         # TODO return the action that the policy prescribes
-        raise NotImplementedError
+        observation = ptu.from_numpy(observation.astype(np.float32))
+        action = self(observation).sample()
+        return ptu.to_numpy(action)
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
-        raise NotImplementedError
+        pass
 
     # This function defines the forward pass of the network.
     # You can return anything you want, but you should be able to differentiate
@@ -93,7 +95,13 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor) -> Any:
-        raise NotImplementedError
+        if(self.discrete):
+            return torch.distributions.Categorial(self.logits_na(observation))
+        else:
+            mu = self.mean_net(observation)
+            sigma = torch.exp(self.logstd)
+            return torch.distributions.MultivariateNormal(mu, torch.diag(sigma))
+    
 
 
 #####################################################
@@ -109,7 +117,11 @@ class MLPPolicySL(MLPPolicy):
             adv_n=None, acs_labels_na=None, qvals=None
     ):
         # TODO: update the policy and return the loss
-        loss = TODO
+        
+        loss = self.loss(self(observations).sample(),actions)
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
         return {
             # You can add extra logging information here, but keep this line
             'Training Loss': ptu.to_numpy(loss),
