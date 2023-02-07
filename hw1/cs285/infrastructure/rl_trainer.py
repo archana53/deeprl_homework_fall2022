@@ -264,7 +264,7 @@ class RL_Trainer(object):
 
             logs["Train_EnvstepsSoFar"] = self.total_envsteps
             logs["TimeSinceStart"] = time.time() - self.start_time
-            last_log = training_logs[-1]  # Only use the last log for now
+            last_log = training_logs[:]  # Only use the last log for now
             logs.update(last_log)
 
 
