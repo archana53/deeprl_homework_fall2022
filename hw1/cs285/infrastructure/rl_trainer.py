@@ -202,7 +202,7 @@ class RL_Trainer(object):
             # HINT: use the agent's train function
             # HINT: keep the agent's training log for debugging
             train_log = self.agent.train(ob_batch,ac_batch,re_batch,next_ob_batch,terminal_batch)
-            all_logs.append(train_log)
+            all_logs.append(train_log['Training Loss'])
         return all_logs
 
     def do_relabel_with_expert(self, expert_policy, paths):
@@ -264,9 +264,10 @@ class RL_Trainer(object):
 
             logs["Train_EnvstepsSoFar"] = self.total_envsteps
             logs["TimeSinceStart"] = time.time() - self.start_time
-            last_log = training_logs[:]  # Only use the last log for now
+            last_log = training_logs[-1]  # Only use the last log for now
             logs.update(last_log)
 
+            
 
             if itr == 0:
                 self.initial_return = np.mean(train_returns)
