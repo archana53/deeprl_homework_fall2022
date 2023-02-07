@@ -8,7 +8,6 @@ from torch import optim
 import numpy as np
 import torch
 from torch import distributions
-from torch.autograd import Variable
 
 from cs285.infrastructure import pytorch_util as ptu
 from cs285.policies.base_policy import BasePolicy
@@ -121,9 +120,9 @@ class MLPPolicySL(MLPPolicy):
         # TODO: update the policy and return the loss
         observations = ptu.from_numpy(observations.astype(np.float32))
         actions = ptu.from_numpy(actions.astype(np.float32))
-        selected_actions = self.get_action(observations)
-        selected_actions = Variable(selected_actions.data, requires_grad=True)
-        loss = self.loss(ptu.from_numpy(selected_actions),actions)
+        selected_actions = ptu.from_numpy(self.get_action(observations))
+        selected_actions.requires_grad = True
+        loss = self.loss(selected_actions,actions)
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
