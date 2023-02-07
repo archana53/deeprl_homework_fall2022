@@ -81,7 +81,8 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
             observation = obs[None]
 
         # TODO return the action that the policy prescribes
-        observation = ptu.from_numpy(observation.astype(np.float32))
+        if not isinstance(observation, torch.Tensor):
+            observation = ptu.from_numpy(observation.astype(np.float32))
         action = self.forward(observation).sample()
         return ptu.to_numpy(action)
 
