@@ -216,8 +216,8 @@ class RL_Trainer(object):
         # and replace paths[i]["action"] with these expert labels
         for path in paths:
             for i in range(utils.get_pathlength(path)):
-                ac = expert_policy.get_action(path[i]['observation'])
-                path[i]["action"] = ac
+                ac = expert_policy.get_action(path['observation'][i])
+                path["action"][i] = ac
         return paths
 
     ####################################
