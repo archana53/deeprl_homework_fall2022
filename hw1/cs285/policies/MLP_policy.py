@@ -84,11 +84,10 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         if not isinstance(observation, torch.Tensor):
             observation = ptu.from_numpy(observation.astype(np.float32))
         action = self.forward(observation).sample()
-        return ptu.to_numpy(action)
+        return action
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
-        print("archana")
         pass
 
     # This function defines the forward pass of the network.
@@ -121,8 +120,7 @@ class MLPPolicySL(MLPPolicy):
         # TODO: update the policy and return the loss
         observations = ptu.from_numpy(observations.astype(np.float32))
         actions = ptu.from_numpy(actions.astype(np.float32))
-        selected_actions = ptu.from_numpy(self.get_action(observations))
-        selected_actions.requires_grad = True
+        selected_actions = self.get_action(observations)
         loss = self.loss(selected_actions,actions)
         self.optimizer.zero_grad()
         loss.backward()

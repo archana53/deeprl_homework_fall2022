@@ -1,5 +1,7 @@
 import numpy as np
 import time
+import torch
+from cs285.infrastructure import pytorch_util as ptu
 
 ############################################
 ############################################
@@ -30,7 +32,10 @@ def sample_trajectory(env, policy, max_path_length, render=False):
 
         #get action from the expert policy
         ac = policy.get_action(ob)
+        if(isinstance(ac, torch.Tensor)):
+            ac = ptu.to_numpy(ac)
         ac = ac[0]
+        print(ac.shape)
         acs.append(ac)
 
         # take that action and record results
