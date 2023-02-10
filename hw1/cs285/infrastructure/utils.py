@@ -35,7 +35,6 @@ def sample_trajectory(env, policy, max_path_length, render=False):
         if(isinstance(ac, torch.Tensor)):
             ac = ptu.to_numpy(ac)
         ac = ac[0]
-        print(ac.shape)
         acs.append(ac)
 
         # take that action and record results
