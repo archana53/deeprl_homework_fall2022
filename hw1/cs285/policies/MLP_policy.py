@@ -84,7 +84,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         if not isinstance(observation, torch.Tensor):
             observation = ptu.from_numpy(observation.astype(np.float32))
         with torch.no_grad():
-            action = ptu.to_numpy(self.forward(observation).sample())
+            action = ptu.to_numpy(self.forward(observation).rsample())
         return action
 
     # update/train this policy
