@@ -88,6 +88,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
+        print("archana")
         pass
 
     # This function defines the forward pass of the network.
@@ -96,7 +97,6 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor) -> Any:
-        print(self.mean_net.training)
         if(self.discrete):
             return torch.distributions.Categorial(self.logits_na(observation))
         else:
@@ -119,7 +119,6 @@ class MLPPolicySL(MLPPolicy):
             adv_n=None, acs_labels_na=None, qvals=None
     ):
         # TODO: update the policy and return the loss
-        print(self.training)
         observations = ptu.from_numpy(observations.astype(np.float32))
         actions = ptu.from_numpy(actions.astype(np.float32))
         selected_actions = ptu.from_numpy(self.get_action(observations))
