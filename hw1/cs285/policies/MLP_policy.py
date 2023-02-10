@@ -121,7 +121,7 @@ class MLPPolicySL(MLPPolicy):
         # TODO: update the policy and return the loss
         observations = ptu.from_numpy(observations.astype(np.float32))
         actions = ptu.from_numpy(actions.astype(np.float32))
-        selected_actions = ptu.from_numpy(self(observations).rsample())
+        selected_actions = self(observations).rsample()
         loss = self.loss(selected_actions,actions)
         self.optimizer.zero_grad()
         loss.backward()
