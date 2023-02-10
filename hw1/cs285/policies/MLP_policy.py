@@ -97,11 +97,11 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor) -> Any:
         if(self.discrete):
-            return torch.distributions.Categorial(self.logits_na(observation)).sample()
+            return torch.distributions.Categorial(self.logits_na(observation))
         else:
             mu = self.mean_net(observation)
             sigma = torch.exp(self.logstd)
-            return torch.distributions.MultivariateNormal(mu, torch.diag(sigma)).sample()
+            return torch.distributions.MultivariateNormal(mu, torch.diag(sigma))
     
 
 
@@ -120,8 +120,9 @@ class MLPPolicySL(MLPPolicy):
         # TODO: update the policy and return the loss
         observations = ptu.from_numpy(observations.astype(np.float32))
         actions = ptu.from_numpy(actions.astype(np.float32))
-        selected_actions = self(observations)
+        selected_actions = self.get_action(observations)
         loss = self.loss(selected_actions,actions)
+        print(self.mean_net.training)
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
