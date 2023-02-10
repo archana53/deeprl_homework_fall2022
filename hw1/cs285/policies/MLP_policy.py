@@ -96,7 +96,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor) -> Any:
-        print(self.logits_na.training)
+        print(self.mean_net.training)
         if(self.discrete):
             return torch.distributions.Categorial(self.logits_na(observation))
         else:
