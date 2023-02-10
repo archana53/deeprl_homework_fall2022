@@ -170,6 +170,7 @@ class RL_Trainer(object):
         # HINT2: you want each of these collected rollouts to be of length self.params['ep_len']
 
         if(itr == 0):
+            print("\n Loading demonstrations from rollouts of expert policy")
             with open(load_initial_expertdata, 'rb') as f:
                 loaded_data = pickle.loads(f.read())
             return loaded_data, 0, None
@@ -266,7 +267,7 @@ class RL_Trainer(object):
             logs["TimeSinceStart"] = time.time() - self.start_time
             last_log = training_logs[-1]  # Only use the last log for now
             logs.update(last_log)
-
+            print(training_logs)
 
 
             if itr == 0:

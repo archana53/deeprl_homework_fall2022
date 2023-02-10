@@ -27,9 +27,9 @@ def sample_trajectory(env, policy, max_path_length, render=False):
 
         # use the most recent ob to decide what to do
         obs.append(ob)
+
         #get action from the expert policy
         ac = policy.get_action(ob)
-        ac = ac[0]
         acs.append(ac)
 
         # take that action and record results
