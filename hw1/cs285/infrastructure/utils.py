@@ -30,6 +30,7 @@ def sample_trajectory(env, policy, max_path_length, render=False):
 
         #get action from the expert policy
         ac = policy.get_action(ob)
+        ac = ac[0]
         acs.append(ac)
 
         # take that action and record results

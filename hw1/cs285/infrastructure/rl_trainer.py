@@ -192,6 +192,7 @@ class RL_Trainer(object):
     def train_agent(self):
         print('\nTraining agent using sampled data from replay buffer...')
         all_logs = []
+        self.agent.actor.train()
         for train_step in range(self.params['num_agent_train_steps_per_iter']):
 
             # TODO sample some data from the data buffer
@@ -204,6 +205,7 @@ class RL_Trainer(object):
             # HINT: keep the agent's training log for debugging
             train_log = self.agent.train(ob_batch,ac_batch,re_batch,next_ob_batch,terminal_batch)
             all_logs.append(train_log)
+        self.agent.action.eval()
         return all_logs
 
     def do_relabel_with_expert(self, expert_policy, paths):
