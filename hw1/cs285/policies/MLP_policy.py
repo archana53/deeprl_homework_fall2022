@@ -84,7 +84,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         if not isinstance(observation, torch.Tensor):
             observation = ptu.from_numpy(observation.astype(np.float32))
         with torch.no_grad():
-            action = ptu.to_numpy(self.forward(observation).rsample())
+            action = ptu.to_numpy(self.forward(observation).sample())
         return action
 
     # update/train this policy
@@ -121,7 +121,7 @@ class MLPPolicySL(MLPPolicy):
         # TODO: update the policy and return the loss
         observations = ptu.from_numpy(observations.astype(np.float32))
         actions = ptu.from_numpy(actions.astype(np.float32))
-        selected_actions = ptu.from_numpy(self.get_action(observations))
+        selected_actions = ptu.from_numpy(self(observations).rsample())
         loss = self.loss(selected_actions,actions)
         self.optimizer.zero_grad()
         loss.backward()
