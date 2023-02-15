@@ -88,7 +88,6 @@ def sample_trajectory(
         ac = policy.get_action(ob)
         if isinstance(ac, torch.Tensor):
             ac = ptu.to_numpy(ac)
-        ac = ac[0]
         acs.append(ac)
 
         # take that action and record results
