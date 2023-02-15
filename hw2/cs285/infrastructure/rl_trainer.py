@@ -145,12 +145,6 @@ class RL_Trainer(object):
                 itr, initial_expertdata, collect_policy, self.params["batch_size"]
             )
             paths, envsteps_this_batch, train_video_paths = training_returns
-            for path in paths:
-                print(
-                    path["observation"].shape,
-                    path["action"].shape,
-                    path["reward"].shape,
-                )
             self.total_envsteps += envsteps_this_batch
             # add collected data to replay buffer
             self.agent.add_to_replay_buffer(paths)
@@ -230,10 +224,9 @@ class RL_Trainer(object):
                 re_batch,
                 next_ob_batch,
                 terminal_batch,
-            ) = self.agent.replay_buffer.sample_random_data(
+            ) = self.agent.replay_buffer.sample_recent_data(
                 self.params["train_batch_size"]
             )
-            print("Printing shapes ", ob_batch.shape, ac_batch.shape, re_batch.shape)
             # TODO use the sampled data to train an agent
             # HINT: use the agent's train function
             # HINT: keep the agent's training log for debugging
