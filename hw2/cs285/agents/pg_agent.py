@@ -1,8 +1,8 @@
 import numpy as np
+from cs285.infrastructure.replay_buffer import ReplayBuffer
+from cs285.policies.MLP_policy import MLPPolicyPG
 
 from .base_agent import BaseAgent
-from cs285.policies.MLP_policy import MLPPolicyPG
-from cs285.infrastructure.replay_buffer import ReplayBuffer
 
 
 class PGAgent(BaseAgent):
@@ -43,6 +43,9 @@ class PGAgent(BaseAgent):
         # using helper functions to compute qvals and advantages, and
         # return the train_log obtained from updating the policy
 
+        q_vals = self.calculate_q_vals(rewards_list)
+        train_log = self.actor.update(observations,actions,q_vals)
+
         return train_log
 
     def calculate_q_vals(self, rewards_list):
@@ -67,16 +70,18 @@ class PGAgent(BaseAgent):
         # Note: q_values should first be a 2D list where the first dimension corresponds to 
         # trajectories and the second corresponds to timesteps, 
         # then flattened to a 1D numpy array.
+        q_values = []
+        for rewards in rewards_list:
+            if not self.reward_to_go:
+                values = self._discounted_return(rewards)
 
-        if not self.reward_to_go:
-            TODO
-
-        # Case 2: reward-to-go PG
-        # Estimate Q^{pi}(s_t, a_t) by the discounted sum of rewards starting from t
-        else:
-            TODO
-
-        return q_values
+            # Case 2: reward-to-go PG
+            # Estimate Q^{pi}(s_t, a_t) by the discounted sum of rewards starting from t
+            else:
+                values = self._discounted_cumsum(rewards)
+            q_values.append(values)
+        q_values = [x for traj in q_values for x in traj]
+        return np.array(q_values)
 
     def estimate_advantage(self, obs: np.ndarray, rews_list: np.ndarray, q_values: np.ndarray, terminals: np.ndarray):
 
@@ -154,8 +159,9 @@ class PGAgent(BaseAgent):
 
             Output: list where each index t contains sum_{t'=0}^T gamma^t' r_{t'}
         """
-
-        return list_of_discounted_returns
+        T = len(rewards)
+        discounted_return = np.sum(np.geomspace(start = 1, stop = np.exp(self.gamma, T-1), num = T) * rewards)
+        return [discounted_return for i in range(T)] 
 
     def _discounted_cumsum(self, rewards):
         """
@@ -163,5 +169,8 @@ class PGAgent(BaseAgent):
             -takes a list of rewards {r_0, r_1, ..., r_t', ... r_T},
             -and returns a list where the entry in each index t' is sum_{t'=t}^T gamma^(t'-t) * r_{t'}
         """
-
+        T = len(rewards)
+        list_of_discounted_cumsums = []
+        for i in range(T):
+            list_of_discounted_cumsums.append(_discounted_return(self,rewards[i:]))
         return list_of_discounted_cumsums
