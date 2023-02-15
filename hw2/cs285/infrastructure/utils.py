@@ -106,7 +106,6 @@ def sample_trajectory(
         if rollout_done:
             break
 
-    print(len(obs), len(acs), len(rewards))
     return Path(obs, image_obs, acs, rewards, next_obs, terminals)
 
 
