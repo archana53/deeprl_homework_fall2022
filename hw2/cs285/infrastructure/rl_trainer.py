@@ -215,7 +215,6 @@ class RL_Trainer(object):
         # TODO: GETTHIS from HW1
         print("\nTraining agent using sampled data from replay buffer...")
         all_logs = []
-        self.agent.actor.train()
         for train_step in range(self.params["num_agent_train_steps_per_iter"]):
             # TODO sample some data from the data buffer
             # HINT1: use the agent's sample function
@@ -237,7 +236,6 @@ class RL_Trainer(object):
                 ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch
             )
             all_logs.append(train_log)
-        self.agent.actor.eval()
         return all_logs
 
     ####################################
