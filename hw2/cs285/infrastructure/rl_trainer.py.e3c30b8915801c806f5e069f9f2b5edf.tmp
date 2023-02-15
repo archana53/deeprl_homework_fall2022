@@ -144,7 +144,7 @@ class RL_Trainer(object):
             training_returns = self.collect_training_trajectories(
                 itr, initial_expertdata, collect_policy, self.params["batch_size"]
             )
-            paths, envsteps_this_batch, train_video_paths = training_returns``
+            paths, envsteps_this_batch, train_video_paths = training_returns
             self.total_envsteps += envsteps_this_batch
             # add collected data to replay buffer
             self.agent.add_to_replay_buffer(paths)
