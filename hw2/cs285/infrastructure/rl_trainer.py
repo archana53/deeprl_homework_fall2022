@@ -221,9 +221,9 @@ class RL_Trainer(object):
             (
                 ob_batch,
                 ac_batch,
-                re_batch,
                 next_ob_batch,
                 terminal_batch,
+                re_batch,
             ) = self.agent.replay_buffer.sample_random_rollouts(
                 self.params["train_batch_size"]
             )
