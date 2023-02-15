@@ -224,7 +224,7 @@ class RL_Trainer(object):
                 re_batch,
                 next_ob_batch,
                 terminal_batch,
-            ) = self.agent.replay_buffer.sample_recent_data(
+            ) = self.agent.replay_buffer.sample_random_rollouts(
                 self.params["train_batch_size"]
             )
             # TODO use the sampled data to train an agent
