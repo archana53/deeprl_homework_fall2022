@@ -123,8 +123,9 @@ class PGAgent(BaseAgent):
                     ## is 1 if the state is the last in its trajectory, and
                     ## 0 otherwise.
                     pass
+
                 # remove dummy advantage
-                # advantages = advantages[:-1]
+                advantages = advantages[:-1]
 
             else:
                 ## TODO: compute advantage estimates using q_values, and values as baselines
