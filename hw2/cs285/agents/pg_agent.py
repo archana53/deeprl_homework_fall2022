@@ -41,9 +41,12 @@ class PGAgent(BaseAgent):
         # TODO: update the PG actor/policy using the given batch of data
         # using helper functions to compute qvals and advantages, and
         # return the train_log obtained from updating the policy
+        print(observations.shape)
+        print(actions.shape)
         print(rewards_list.shape)
         q_vals = self.calculate_q_vals(rewards_list)
         train_log = self.actor.update(observations, actions, q_vals)
+
         return train_log
 
     def calculate_q_vals(self, rewards_list):
