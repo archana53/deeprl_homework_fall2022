@@ -129,7 +129,7 @@ class MLPPolicyPG(MLPPolicy):
         super().__init__(ac_dim, ob_dim, n_layers, size, **kwargs)
         self.baseline_loss = nn.MSELoss()
 
-    def update(self, observations, actions, advantages, q_values=None):
+    def update(self, observations, actions, advantages, lengths, q_values=None):
         observations = ptu.from_numpy(observations)
         actions = ptu.from_numpy(actions)
         advantages = ptu.from_numpy(advantages)
@@ -141,10 +141,10 @@ class MLPPolicyPG(MLPPolicy):
         # HINT2: you will want to use the `log_prob` method on the distribution returned
         # by the `forward` method
 
-        loss = np.mean(
+        loss = (
             -self.forward(observations).log_prob(actions).reshape(advantages.shape)
             * advantages
-        )
+        ) / (len(lengths))
         loss.backward()
 
         # TODO

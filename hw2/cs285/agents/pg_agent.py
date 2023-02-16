@@ -53,7 +53,7 @@ class PGAgent(BaseAgent):
             start += lengths[i]
 
         q_vals = self.calculate_q_vals(rewards_by_trajectory)
-        train_log = self.actor.update(observations, actions, q_vals)
+        train_log = self.actor.update(observations, actions, q_vals, lengths)
 
         return train_log
 
