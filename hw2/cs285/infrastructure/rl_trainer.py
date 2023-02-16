@@ -218,20 +218,22 @@ class RL_Trainer(object):
             # TODO sample some data from the data buffer
             # HINT1: use the agent's sample function
             # HINT2: how much data = self.params['train_batch_size']
-            (
-                ob_batch,
-                ac_batch,
-                next_ob_batch,
-                terminal_batch,
-                re_batch, _
-            ) = self.agent.replay_buffer.sample_random_rollouts(
+            paths = self.agent.replay_buffer.sample_recent_rollouts(
                 self.params["train_batch_size"]
             )
             # TODO use the sampled data to train an agent
             # HINT: use the agent's train function
             # HINT: keep the agent's training log for debugging
+            lengths = [len(path["reward"]) for path in paths]
+            (
+                ob_batch,
+                ac_batch,
+                re_batch,
+                next_ob_batch,
+                terminals_batch,
+            ) = utils.convert_listofrollouts(paths)
             train_log = self.agent.train(
-                ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch
+                ob_batch, ac_batch, re_batch, next_ob_batch, terminals_batch, lengths
             )
             all_logs.append(train_log)
         return all_logs

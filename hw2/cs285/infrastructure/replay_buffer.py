@@ -64,7 +64,7 @@ class ReplayBuffer(object):
 
     def sample_random_rollouts(self, num_rollouts):
         rand_indices = np.random.permutation(len(self.paths))[:num_rollouts]
-        return convert_listofrollouts([self.paths[i] for i in rand_indices])
+        return [self.paths[i] for i in rand_indices]
 
     def sample_recent_rollouts(self, num_rollouts=1):
         return self.paths[-num_rollouts:]

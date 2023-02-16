@@ -32,7 +32,9 @@ class PGAgent(BaseAgent):
         # replay buffer
         self.replay_buffer = ReplayBuffer(1000000)
 
-    def train(self, observations, actions, rewards_list, next_observations, terminals):
+    def train(
+        self, observations, actions, rewards_list, next_observations, terminals, lengths
+    ):
         """
         Training a PG agent refers to updating its actor using the given observations/actions
         and the calculated qvals/advantages that come from the seen rewards.
@@ -41,10 +43,16 @@ class PGAgent(BaseAgent):
         # TODO: update the PG actor/policy using the given batch of data
         # using helper functions to compute qvals and advantages, and
         # return the train_log obtained from updating the policy
+
+        # Use terminals to find end of reward list
+        rewards_by_trajectory = []
+        start = 0
         print(observations.shape)
-        print(actions.shape)
-        print(rewards_list.shape)
-        q_vals = self.calculate_q_vals(rewards_list)
+        for i in range(lengths):
+            rewards_by_trajectory.append(list(rewards_list[start : lengths[i]]))
+            start += lengths[i]
+
+        q_vals = self.calculate_q_vals(rewards_by_trajectory)
         train_log = self.actor.update(observations, actions, q_vals)
 
         return train_log
@@ -81,6 +89,7 @@ class PGAgent(BaseAgent):
                 values = self._discounted_cumsum(rewards)
             q_values.append(values)
         q_values = [x for traj in q_values for x in traj]
+        print(q_values.shape)
         return np.array(q_values)
 
     def estimate_advantage(
