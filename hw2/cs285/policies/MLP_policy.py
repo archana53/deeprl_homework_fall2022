@@ -141,7 +141,7 @@ class MLPPolicyPG(MLPPolicy):
         # HINT2: you will want to use the `log_prob` method on the distribution returned
         # by the `forward` method
 
-        loss = (
+        loss = np.sum(
             -self.forward(observations).log_prob(actions).reshape(advantages.shape)
             * advantages
         ) / (len(lengths))
