@@ -181,7 +181,5 @@ class PGAgent(BaseAgent):
         T = (rewards).shape[0]
         list_of_discounted_cumsums = []
         for i in range(T):
-            list_of_discounted_cumsums.append(
-                self._discounted_return(self, rewards[i:])
-            )
+            list_of_discounted_cumsums.append(self._discounted_return(rewards[i:]))
         return list_of_discounted_cumsums
