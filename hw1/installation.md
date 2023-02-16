@@ -50,5 +50,5 @@ GLFWError: (65537) b'The GLFW library is not initialized'
 
 These can be resolved with:
 ```
-export MUJOCO_GL=egl
+[export MUJOCO_GL=egl]
 ```

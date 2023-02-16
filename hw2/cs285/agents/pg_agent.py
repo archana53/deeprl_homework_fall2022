@@ -167,10 +167,8 @@ class PGAgent(BaseAgent):
         Output: list where each index t contains sum_{t'=0}^T gamma^t' r_{t'}
         """
         T = (rewards).shape[0]
-        geom = np.geomspace(start=1, stop=np.exp(self.gamma, T - 1), num=T)
-        print(geom)
         discounted_return = np.sum(
-            np.geomspace(start=1, stop=np.exp(self.gamma, T - 1), num=T) * rewards
+            np.geomspace(start=1, stop=np.exp(self.gamma, T - 1), num=T - 1) * rewards
         )
         return [discounted_return for i in range(T)]
 
