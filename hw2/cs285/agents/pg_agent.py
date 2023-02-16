@@ -32,9 +32,7 @@ class PGAgent(BaseAgent):
         # replay buffer
         self.replay_buffer = ReplayBuffer(1000000)
 
-    def train(
-        self, observations, actions, rewards_list, next_observations, terminals, lengths
-    ):
+    def train(self, observations, actions, rewards_list, next_observations, terminals):
         """
         Training a PG agent refers to updating its actor using the given observations/actions
         and the calculated qvals/advantages that come from the seen rewards.
@@ -45,15 +43,9 @@ class PGAgent(BaseAgent):
         # return the train_log obtained from updating the policy
 
         # Use terminals to find end of reward list
-        rewards_by_trajectory = []
-        start = 0
-        print(observations.shape)
-        for i in range(lengths):
-            rewards_by_trajectory.append(list(rewards_list[start : lengths[i]]))
-            start += lengths[i]
-
-        q_vals = self.calculate_q_vals(rewards_by_trajectory)
-        train_log = self.actor.update(observations, actions, q_vals, lengths)
+        q_vals = self.calculate_q_vals(rewards_list)
+        advantages = self.estimate_advantage(observations, rewards_list, q_vals)
+        train_log = self.actor.update(observations, actions, advantages)
 
         return train_log
 
@@ -149,7 +141,7 @@ class PGAgent(BaseAgent):
         # Normalize the resulting advantages to have a mean of zero
         # and a standard deviation of one
         if self.standardize_advantages:
-            advantages = TODO
+            advantages = (advantages - np.mean(advantages)) / (np.std(advantages))
 
         return advantages
 
@@ -174,7 +166,7 @@ class PGAgent(BaseAgent):
 
         Output: list where each index t contains sum_{t'=0}^T gamma^t' r_{t'}
         """
-        T = len(rewards)
+        T = (rewards).shape[0]
         discounted_return = np.sum(
             np.geomspace(start=1, stop=np.exp(self.gamma, T - 1), num=T) * rewards
         )
@@ -186,7 +178,7 @@ class PGAgent(BaseAgent):
         -takes a list of rewards {r_0, r_1, ..., r_t', ... r_T},
         -and returns a list where the entry in each index t' is sum_{t'=t}^T gamma^(t'-t) * r_{t'}
         """
-        T = len(rewards)
+        T = (rewards).shape[0]
         list_of_discounted_cumsums = []
         for i in range(T):
             list_of_discounted_cumsums.append(
