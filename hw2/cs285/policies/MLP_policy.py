@@ -140,12 +140,13 @@ class MLPPolicyPG(MLPPolicy):
         # sum_{t=0}^{T-1} [grad [log pi(a_t|s_t) * (Q_t - b_t)]]
         # HINT2: you will want to use the `log_prob` method on the distribution returned
         # by the `forward` method
-        loss = np.sum(
+        loss = torch.sum(
             -self.forward(observations).log_prob(actions).reshape(advantages.shape)
             * advantages
         )
+        self.optimizer.zero_grad()
         loss.backward()
-
+        self.optimizer.step()
         # TODO
 
         if self.nn_baseline:
@@ -157,7 +158,11 @@ class MLPPolicyPG(MLPPolicy):
             ## ptu.from_numpy before using it in the loss
 
             # TODO
-            pass
+            q_values = ptu.from_numpy(q_values)
+            self.baseline_optimizer.zero_grad()
+            loss_b = self.baseline_loss(q_values, self.baseline(observations))
+            loss_b.backward()
+            self.baseline_optimizer.step()
 
         train_log = {
             "Training Loss": ptu.to_numpy(loss),
