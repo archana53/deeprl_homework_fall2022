@@ -92,6 +92,9 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
             obs = ptu.from_numpy(obs.astype(np.float32))
         with torch.no_grad():
             action = ptu.to_numpy(self.forward(obs).sample())
+
+        if self.discrete:
+            action = np.array([action])
         return action
 
     # update/train this policy
