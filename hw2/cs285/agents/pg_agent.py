@@ -1,5 +1,6 @@
 import numpy as np
 from cs285.infrastructure.replay_buffer import ReplayBuffer
+from cs285.infrastructure.utils import normalize, unnormalize
 from cs285.policies.MLP_policy import MLPPolicyPG
 
 from .base_agent import BaseAgent
@@ -82,8 +83,8 @@ class PGAgent(BaseAgent):
             else:
                 values = self._discounted_cumsum(rewards)
             q_values.append(values)
-        q_values = [x for traj in q_values for x in traj]
-        return np.array(q_values)
+        q_values = np.concatenate(q_values)
+        return q_values
 
     def estimate_advantage(
         self,
@@ -106,8 +107,9 @@ class PGAgent(BaseAgent):
             ## TODO: values were trained with standardized q_values, so ensure
             ## that the predictions have the same mean and standard deviation as
             ## the current batch of q_values
-            values = (values_unnormalized - np.mean(q_values)) / np.std(q_values)
-
+            values = unnormalize(
+                values_unnormalized, np.mean(q_values), np.std(q_values)
+            )
             if self.gae_lambda is not None:
                 ## append a dummy T+1 value for simpler recursive calculation
                 values = np.append(values, [0])
@@ -142,7 +144,7 @@ class PGAgent(BaseAgent):
         # Normalize the resulting advantages to have a mean of zero
         # and a standard deviation of one
         if self.standardize_advantages:
-            advantages = (advantages - np.mean(advantages)) / (np.std(advantages))
+            advantages = normalize(advantages, np.mean(advantages), np.std(advantages))
 
         return advantages
 

@@ -4,6 +4,7 @@ import itertools
 import numpy as np
 import torch
 from cs285.infrastructure import pytorch_util as ptu
+from cs285.infrastructure.utils import normalize
 from cs285.policies.base_policy import BasePolicy
 from torch import distributions, nn, optim
 from torch.nn import functional as F
@@ -161,10 +162,13 @@ class MLPPolicyPG(MLPPolicy):
             ## ptu.from_numpy before using it in the loss
 
             # TODO
+            # Normalise the q_values
+            q_values = normalize(q_values, np.mean(q_values), np.std(q_values))
             q_values = ptu.from_numpy(q_values)
-            print(q_values.shape, observations.shape)
             self.baseline_optimizer.zero_grad()
-            loss_b = self.baseline_loss(q_values, self.baseline(observations))
+            loss_b = self.baseline_loss(
+                self.baseline(observations).reshape(q_values.shape), q_values
+            )
             loss_b.backward()
             self.baseline_optimizer.step()
 
