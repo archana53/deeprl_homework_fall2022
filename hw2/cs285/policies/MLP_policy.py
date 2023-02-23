@@ -144,9 +144,15 @@ class MLPPolicyPG(MLPPolicy):
         # sum_{t=0}^{T-1} [grad [log pi(a_t|s_t) * (Q_t - b_t)]]
         # HINT2: you will want to use the `log_prob` method on the distribution returned
         # by the `forward` method
-        loss = torch.sum(
-            -self.forward(observations).log_prob(actions).reshape(advantages.shape)
-            * advantages
+        logprobs = (
+            self.forward(observations).log_prob(actions).reshape(advantages.shape)
+        )
+
+        loss = -torch.sum(
+            torch.mul(
+                logprobs,
+                advantages,
+            )
         )
         self.optimizer.zero_grad()
         loss.backward()
