@@ -2,7 +2,6 @@ import numpy as np
 
 
 class ArgMaxPolicy(object):
-
     def __init__(self, critic):
         self.critic = critic
 
@@ -11,7 +10,9 @@ class ArgMaxPolicy(object):
             observation = obs
         else:
             observation = obs[None]
-        
-        ## TODO return the action that maxinmizes the Q-value 
+
+        qa_vals = self.critic.qa_values(observation)
+        action = np.argmax(qa_vals, axis=1)
+        ## TODO return the action that maximizes the Q-value
         # at the current observation as the output
         return action.squeeze()
