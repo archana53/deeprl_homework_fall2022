@@ -1,9 +1,7 @@
 import numpy as np
 from cs285.critics.dqn_critic import DQNCritic
-from cs285.infrastructure.dqn_utils import (
-    MemoryOptimizedReplayBuffer,
-    PiecewiseSchedule,
-)
+from cs285.infrastructure.dqn_utils import (MemoryOptimizedReplayBuffer,
+                                            PiecewiseSchedule)
 from cs285.policies.argmax_policy import ArgMaxPolicy
 
 
@@ -50,13 +48,13 @@ class DQNAgent(object):
         # TODO store the latest observation ("frame") into the replay buffer
         # HINT: the replay buffer used here is `MemoryOptimizedReplayBuffer`
         # in dqn_utils.py
-        self.replay_buffer_idx = None
+        self.replay_buffer_idx = self.replay_buffer.store_frame(self.last_obs)
 
         eps = self.exploration.value(self.t)
 
         # TODO use epsilon greedy exploration when selecting action
         perform_random_action = np.random.random(1)
-        if perform_random_action < eps:
+        if perform_random_action < eps or self.t < self.learning_starts:
             # HINT: take random action (can sample from self.env.action_space)
             # with probability eps (see np.random.random())
             # OR if your current step number (see self.t) is less that self.learning_starts
@@ -78,8 +76,7 @@ class DQNAgent(object):
         # TODO store the result of taking this action into the replay buffer
         # HINT1: see your replay buffer's `store_effect` function
         # HINT2: one of the arguments you'll need to pass in is self.replay_buffer_idx from above
-        index = self.replay_buffer.store_frame(obs)
-        self.replay_buffer.store_effect(index, action, reward, done)
+        self.replay_buffer.store_effect(self.replay_buffer_idx, action, reward, done)
 
         # TODO if taking this step resulted in done, reset the env (and the latest observation)
         if done:
@@ -107,6 +104,7 @@ class DQNAgent(object):
                 self.critic.update_target_network()
 
             self.num_param_updates += 1
-
+        else:
+            print("Not enough samples")
         self.t += 1
         return log

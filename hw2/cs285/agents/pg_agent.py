@@ -103,6 +103,7 @@ class PGAgent(BaseAgent):
             values_unnormalized = self.actor.run_baseline_prediction(obs)
             ## ensure that the value predictions and q_values have the same dimensionality
             ## to prevent silent broadcasting errors
+            print(values_unnormalized.ndim, q_values.ndim)
             assert values_unnormalized.ndim == q_values.ndim
             ## TODO: values were trained with standardized q_values, so ensure
             ## that the predictions have the same mean and standard deviation as
@@ -189,8 +190,8 @@ class PGAgent(BaseAgent):
         -and returns a list where the entry in each index t' is sum_{t'=t}^T gamma^(t'-t) * r_{t'}
         """
         T = (rewards).shape[0]
-        list_of_discounted_cumsums = np.zeros((T + 1, 1))
-        for i in np.reverse(range(T)):
+        list_of_discounted_cumsums = np.zeros((T + 1))
+        for i in np.flip(np.arange(T)):
             list_of_discounted_cumsums[i] = rewards[i] + self.gamma * (
                 list_of_discounted_cumsums[i + 1]
             )

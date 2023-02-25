@@ -1,9 +1,9 @@
 import os
 import time
 
-from cs285.infrastructure.rl_trainer import RL_Trainer
 from cs285.agents.dqn_agent import DQNAgent
 from cs285.infrastructure.dqn_utils import get_env_kwargs
+from cs285.infrastructure.rl_trainer import RL_Trainer
 
 
 class Q_Trainer(object):
