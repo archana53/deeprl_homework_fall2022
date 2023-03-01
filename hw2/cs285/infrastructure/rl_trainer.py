@@ -95,6 +95,7 @@ class RL_Trainer(object):
 
         agent_class = self.params["agent_class"]
         self.agent = agent_class(self.env, self.params["agent_params"])
+        self.paths_for_IL = {}
 
     def run_training_loop(
         self,
@@ -119,6 +120,7 @@ class RL_Trainer(object):
         # init vars at beginning of training
         self.total_envsteps = 0
         self.start_time = time.time()
+        self.n_iter = n_iter
 
         for itr in range(n_iter):
             print("\n\n********** Iteration %i ************" % itr)
@@ -164,6 +166,9 @@ class RL_Trainer(object):
                     self.agent.save(
                         "{}/agent_itr_{}.pt".format(self.params["logdir"], itr)
                     )
+
+        with open(f"types_expert_data_{self.params['env_name']}.pkl", "wb") as f:
+            pickle.dump(self.paths_for_IL, f)
 
     ####################################
     ####################################
@@ -252,6 +257,13 @@ class RL_Trainer(object):
             self.env, eval_policy, self.params["eval_batch_size"], self.params["ep_len"]
         )
 
+        if itr == self.n_iter % 1000:
+            eval_paths = utils.sample_n_trajectories(
+                self.env, eval_policy, 2, self.params["ep_len"]
+            )
+            eval_returns = [eval_path["reward"].sum() for eval_path in eval_paths]
+            self.paths_for_IL[eval_returns] = eval_paths
+
         # save eval rollouts as videos in tensorboard event file
         if self.logvideo and train_video_paths != None:
             print("\nCollecting video rollouts eval")
@@ -283,6 +295,15 @@ class RL_Trainer(object):
             # returns, for logging
             train_returns = [path["reward"].sum() for path in paths]
             eval_returns = [eval_path["reward"].sum() for eval_path in eval_paths]
+
+            if np.mean(eval_returns) == 200 and not os.path.isfile(
+                f"expert_data_{self.params['env_name']}.pkl"
+            ):
+                eval_paths_1 = utils.sample_n_trajectories(
+                    self.env, eval_policy, 1, self.params["ep_len"]
+                )
+                with open(f"expert_data_{self.params['env_name']}.pkl", "wb") as f:
+                    pickle.dump(eval_paths_1, f)
 
             # episode lengths, for logging
             train_ep_lens = [len(path["reward"]) for path in paths]

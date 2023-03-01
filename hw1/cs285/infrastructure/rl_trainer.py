@@ -255,6 +255,13 @@ class RL_Trainer(object):
             self.env, eval_policy, self.params["eval_batch_size"], self.params["ep_len"]
         )
 
+        if itr == self.n_iter - 1:
+            eval_paths = utils.sample_n_trajectories(
+                self.env, eval_policy, 20, self.params["ep_len"]
+            )
+            with open(f"expert_data_{self.params['env_name']}.pkl", "wb") as f:
+                pickle.dump(eval_paths, f)
+
         # save eval rollouts as videos in tensorboard event file
         if self.log_video and train_video_paths != None:
             print("\nCollecting video rollouts eval")
@@ -284,10 +291,6 @@ class RL_Trainer(object):
             # returns, for logging
             train_returns = [path["reward"].sum() for path in paths]
             eval_returns = [eval_path["reward"].sum() for eval_path in eval_paths]
-
-            if np.mean(eval_returns) == 200:
-                with open("expert_policy", "wb") as f:
-                    pickle.dump(paths, f)
 
             # episode lengths, for logging
             train_ep_lens = [len(path["reward"]) for path in paths]

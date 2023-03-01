@@ -61,10 +61,12 @@ class DQNCritic(BaseCritic):
         reward_n = ptu.from_numpy(reward_n)
         terminal_n = ptu.from_numpy(terminal_n)
 
+        # Get Q(s,a) values
         qa_t_values = self.q_net(ob_no)
+        # Get Q(s,a) for the action a that was chosen
         q_t_values = torch.gather(qa_t_values, 1, ac_na.unsqueeze(1)).squeeze(1)
 
-        # TODO compute the Q-values from the target network
+        # Get Q_values for the target to pick the best action
         qa_tp1_values = self.q_net_target(next_ob_no)
 
         if self.double_q:
